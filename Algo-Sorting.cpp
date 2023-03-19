@@ -6,6 +6,9 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <cmath>
+#include <algorithm>
+#include <unistd.h>
 
 using namespace std;
 
@@ -24,6 +27,8 @@ vector <int> insertion_sort(vector <int> arr);
 
 vector <int> merge_sort(vector <int> arr);
 
+vector <int> count_sort(vector <int> arr);
+
 void menu();
 
 
@@ -38,6 +43,7 @@ void menu(){
     cout<<"3. Insertion Sort"<<endl;
     cout<<"4. Merge Sort"<<endl;
     cout<<"5. All sorts"<<endl;
+    cout<<"6. Count Sort"<<endl;
     cout<<"6. Exit"<<endl;
 
     cout<<"Input number of tests:"<<endl;
@@ -64,6 +70,7 @@ void menu(){
 
     for(int i = 0; i < tests; i++){
 
+        usleep(1000000);
         srand(time(NULL));
 
         ofstream fout(chosen_sort + "_" + to_string(i) + ".txt");
@@ -102,6 +109,7 @@ void menu(){
     else if(chosen_sort == "all_sorts"){
 
         for(int i = 0; i < tests; i++){
+        usleep(1000000);
 
         srand(time(NULL));
 
@@ -136,6 +144,7 @@ void menu(){
 }
 
 for(int i = 0; i < tests; i++){
+        usleep(1000000);
 
 srand(time(NULL));
 
@@ -171,6 +180,7 @@ srand(time(NULL));
 
 
 for(int i = 0; i < tests; i++){
+            usleep(1000000);
 
 
 srand(time(NULL));
@@ -209,6 +219,8 @@ srand(time(NULL));
 
 
 for(int i = 0; i < tests; i++){
+            usleep(1000000);
+
 
 srand(time(NULL));
 
@@ -243,11 +255,46 @@ srand(time(NULL));
 
 }
 
+for(int i = 0; i < tests; i++){
+            usleep(1000000);
+
+
+srand(time(NULL));
+
+        string sort_ = "count_sort";
+        ofstream fout(sort_ + "_" + to_string(i) + ".txt");
+
+        vector <int> arr = generate_vector(size, max);
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        vector <int> sorted_arr = sort(sort_, arr);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+       
+        double elapsed2 = elapsed.count();
+
+        elapsed2 /= 100000000.0;
+
+        fout<<"Sorting method: "<<sort_<<endl;
+        fout<<"Time: "<<elapsed2<<" seconds"<<endl;
+        fout<<endl;
+
+        for(int i = 0; i < sorted_arr.size(); i++){
+        fout << sorted_arr[i] << " ";
+
+        }
+
+        fout << endl;
+
 
 
 
 }
 
+
+}
 
 
 
@@ -318,6 +365,9 @@ vector <int> sort(string sortfunction, vector <int> arr){
         return merge_sort(arr);
     }
 
+    else if(sortfunction == "count_sort"){
+        return count_sort(arr);
+    }
 
     else{
         cout<<"Invalid sort function"<<endl;
@@ -430,4 +480,33 @@ vector <int> merge_sort(vector <int> arr)
 }
 
 
+ 
+
+
+vector<int> count_sort(vector<int> arr){
+    vector<int> result(arr.size(), 0);
+
+    int max = 0;
+    for(int i = 0; i < arr.size(); i++){
+        if(arr[i] > max){
+            max = arr[i];
+        }
+    }
+
+    vector<int> count(max+1, 0);
+    for (int i = 0; i < arr.size(); i++) {
+        count[arr[i]]++;
+    }
+ 
+    for (int i = 1; i <= max; i++) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = 0; i < arr.size(); i++) {
+        result[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+    }
+
+    return result;
+}
 
